@@ -1,27 +1,13 @@
-import "./styles.css";
-import { CounterButton } from "@repo/ui/counter-button";
-import { Link } from "@repo/ui/link";
+import {Button} from  "@repo/ui/button"
+import {Input } from  "@repo/ui/input"
 
-function App() {
+
+
+export default function index() {
   return (
-    <div className="container">
-      <h1 className="title">
-        Admin <br />
-        <span>Kitchen Sink</span>
-      </h1>
-      <CounterButton />
-      <p className="description">
-        Built With{" "}
-        <Link href="https://turbo.build/repo" newTab>
-          Turborepo
-        </Link>
-        {" & "}
-        <Link href="https://vitejs.dev/" newTab>
-          Vite
-        </Link>
-      </p>
+    <div>index
+      <Button/>
+      <Input/>
     </div>
-  );
+  )
 }
-
-export default App;
