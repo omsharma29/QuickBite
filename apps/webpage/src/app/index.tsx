@@ -1,13 +1,22 @@
-import {Button} from  "@repo/ui/button"
-import {Input } from  "@repo/ui/input"
+import Banner from "../components/Banner";
+import FlashBox from "../components/FlashBox";
+import Footer from "../components/Footer";
+import Header from "../components/Header";
+import HowItWorks from "../components/HowItWorks";
+import Pizza from "../components/Pizza";
+
 
 
 
 export default function index() {
   return (
-    <div>index
-      <Button/>
-      <Input/>
+    <div>
+      <Header />
+      <FlashBox />
+      <HowItWorks />
+      <Pizza />
+      <Banner />
+      <Footer />
     </div>
   )
 }
