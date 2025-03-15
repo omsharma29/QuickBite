@@ -57,7 +57,7 @@ export default function Pizza() {
                             <div className="pizzaName font-semibold ">{pizz.pizza_name}</div>
                             <div className="price font-bold ">Price: {pizz.pizza_price}</div>
                             <Button
-                                className="text-white mt-2 w-[150px] cursor-pointer bg-[#F17228] border border-transparent hover:border-[#FF5900] hover:drop-shadow-[0px_4px_10px_#FFB20E] ">
+                                className="text-white mt-2 w-[150px] cursor-pointer bg-[#F17228] border border-transparent hover:border-[#FF5900] hover:drop-shadow-[0px_4px_10px_#FFB20E] rounded-2xl ">
                                 Add To Cart</Button>
                         </div>
                     ))}
