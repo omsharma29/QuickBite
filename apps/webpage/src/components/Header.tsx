@@ -2,12 +2,31 @@ import Logo from "../assets/Logo.svg"
 import { MapPin, Truck } from "lucide-react"
 import HeaderImg from "../assets/HeaderImg.svg"
 import { Input } from "@repo/ui/input"
-import { Button as FindAddress } from "@repo/ui/button"
+import { Button, Button as FindAddress } from "@repo/ui/button"
 import  AuthModal  from "./AuthModal"
+import {auth} from  "../lib/firebase-auth";
+import { useEffect, useState } from "react"
+import CartBtn from "./CartBtn"
 
 
 function Header() {
+    const [user, setUser] = useState(null);
 
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((currentUser : any) => {
+            console.log("Auth State Changed:", currentUser);
+            setUser(currentUser);
+        });
+    
+        return () => unsubscribe(); // Cleanup listener on unmount
+    }, []);
+    const handleLogout = async()=>{
+        try {
+            auth.signOut()
+        } catch (error : any) {
+            console.log(error)
+        }
+    }
     return (
         <div className="flex flex-col">
             <div className="topHeader w-[100%] h-[40px] bg-white flex flex-row justify-around">
@@ -19,15 +38,14 @@ function Header() {
                     <MapPin className="text-[#FFB20E]" />
                     <span>Location Not Fetched</span>
                 </div>
+                {user ?
+                <div className="cart flex gap-1.5">
+                    <CartBtn/>
+                </div> : ""
+                }
                 <div className="signupButton flex gap-1.5 ">
-
-
                     <span className="pl-2 my-0.5">
-
-
-                       <AuthModal/>
-
-
+                       {user ? <Button onClick={handleLogout} className="px-4 py-2 bg-[#FFB20E] text-white rounded-lg hover:bg-[#e6a00d] transition-colors duration-200">Log Out</Button> : <AuthModal/>}
                     </span>
                 </div>
             </div>

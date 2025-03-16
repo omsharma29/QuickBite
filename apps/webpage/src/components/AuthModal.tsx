@@ -1,24 +1,69 @@
 import { Button } from "@repo/ui/button";
 import { ArrowRight, Mail, Lock, X } from "lucide-react";
 import { useState } from "react";
+import { auth } from "../lib/firebase-auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
 export default function AuthModal() {
   const [modal, setModal] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading] = useState(false);
-  const [error] = useState('');
-  const [signup, setSignup] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [signup, setSignup] = useState(false);
+  const [error, setError] = useState("");
 
   const toggle = () => {
     setModal((prev) => !prev);
+    resetErrors();
   };
 
   const clickSignup = () => {
-    setSignup((prev) => !prev)
-  }
+    setSignup((prev) => !prev);
+    resetErrors();
+  };
 
-  const handleSubmit = () => { }
+  const resetErrors = () => {
+    setEmailError("");
+    setPasswordError("");
+    setError("");
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setLoading(true);
+    resetErrors(); // Reset previous errors
+
+    try {
+      if (signup) {
+        await createUserWithEmailAndPassword(auth, email, password);
+        console.log("User Created Successfully");
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+        console.log("User Logged In Successfully");
+      }
+      setModal(false); // Close modal on success
+    } catch (error: any) {
+      console.error("Auth Error:", error.code);
+
+      if (error.code === "auth/email-already-in-use") {
+        setEmailError("This email is already registered. Please log in.");
+      } else if (error.code === "auth/user-not-found") {
+        setEmailError("No account found with this email. Please sign up.");
+      } else if (error.code === "auth/invalid-email") {
+        setEmailError("Invalid email format. Please enter a valid email.");
+      } else if (error.code === "auth/wrong-password") {
+        setPasswordError("Incorrect password. Please try again.");
+      } else if (error.code === "auth/weak-password") {
+        setPasswordError("Password should be at least 6 characters.");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false); // Ensure loading stops after execution
+    }
+  };
 
   return (
     <>
@@ -26,7 +71,7 @@ export default function AuthModal() {
         onClick={toggle}
         className="px-4 py-2 bg-[#FFB20E] text-white rounded-lg hover:bg-[#e6a00d] transition-colors duration-200"
       >
-        Signin
+        Sign In
       </Button>
 
       {modal && (
@@ -35,14 +80,12 @@ export default function AuthModal() {
             <div>
               <div className="flex justify-between mb-4 pb-8">
                 <div className="font-bold text-3xl text-[#FFB20E]">
-                  {signup ? "SignUp" : "LogIn"}
+                  {signup ? "Sign Up" : "Log In"}
                 </div>
                 <X onClick={toggle} className="cursor-pointer text-gray-600" />
               </div>
+
               <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-                {error && (
-                  <div className="text-red-500 text-sm">{error}</div>
-                )}
                 <div className="space-y-2">
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                     Email
@@ -54,11 +97,14 @@ export default function AuthModal() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FFB20E] focus:border-transparent"
+                      className={`pl-10 w-full px-4 py-3 rounded-lg border ${
+                        emailError ? "border-red-500" : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-[#FFB20E] focus:border-transparent`}
                       placeholder="Enter your email"
                       required
                     />
                   </div>
+                  {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -72,30 +118,35 @@ export default function AuthModal() {
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FFB20E] focus:border-transparent"
-                      placeholder="Create a password"
+                      className={`pl-10 w-full px-4 py-3 rounded-lg border ${
+                        passwordError ? "border-red-500" : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-[#FFB20E] focus:border-transparent`}
+                      placeholder="Enter your password"
                       required
                     />
                   </div>
+                  {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
                 </div>
+
+                {error && <p className="text-red-500 text-sm">{error}</p>}
 
                 <button
                   type="submit"
                   disabled={loading}
                   className="w-full bg-[#FFB20E] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#e6a00d] transition-colors duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {signup ? (loading ? 'Siging Up...' : 'Sign Up') : (loading ? 'Logging in...' : 'Log In')}
+                  {loading ? (signup ? "Signing Up..." : "Logging In...") : signup ? "Sign Up" : "Log In"}
                   <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" />
                 </button>
               </form>
 
               <p className="mt-6 text-center text-sm text-gray-600">
-                {signup ? "Already Have an Account" : "Don't Have an account"} {' '}
+                {signup ? "Already have an account?" : "Don't have an account?"}{" "}
                 <button
                   onClick={clickSignup}
                   className="text-[#FFB20E] hover:underline font-medium"
                 >
-                  {signup ? "LogIn" : "SignUp"}
+                  {signup ? "Log In" : "Sign Up"}
                 </button>
               </p>
             </div>
