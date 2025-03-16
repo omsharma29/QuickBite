@@ -1,14 +1,17 @@
 import { Button } from "@repo/ui/button";
 import { ArrowRight, Mail, Lock, X } from "lucide-react";
 import { useState } from "react";
-import { auth } from "../lib/firebase-auth";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { auth, provider } from "../lib/firebase-auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { FcGoogle } from "react-icons/fc";
+
 
 export default function AuthModal() {
   const [modal, setModal] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [Gloading, setGLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [signup, setSignup] = useState(false);
@@ -65,6 +68,18 @@ export default function AuthModal() {
     }
   };
 
+  const handleGoogle = async()=>{
+    setGLoading(true);
+    try {
+      await signInWithPopup(auth, provider )
+      setGLoading(false)
+    } catch (error) {
+      console.error(error)
+    }
+    
+
+  }
+
   return (
     <>
       <Button
@@ -78,14 +93,14 @@ export default function AuthModal() {
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black/50 z-[1000]">
           <div className="bg-white w-[30%] h-[500px] flex items-center justify-center text-black border border-gray-300 shadow-lg rounded-md">
             <div>
-              <div className="flex justify-between mb-4 pb-8">
+              <div className="flex justify-between mb-4 pb-2">
                 <div className="font-bold text-3xl text-[#FFB20E]">
                   {signup ? "Sign Up" : "Log In"}
                 </div>
                 <X onClick={toggle} className="cursor-pointer text-gray-600" />
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+              <form onSubmit={handleSubmit} className="space-y-6 mt-2">
                 <div className="space-y-2">
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                     Email
@@ -97,9 +112,8 @@ export default function AuthModal() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className={`pl-10 w-full px-4 py-3 rounded-lg border ${
-                        emailError ? "border-red-500" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-[#FFB20E] focus:border-transparent`}
+                      className={`pl-10 w-full px-4 py-3 rounded-lg border ${emailError ? "border-red-500" : "border-gray-300"
+                        } focus:outline-none focus:ring-2 focus:ring-[#FFB20E] focus:border-transparent`}
                       placeholder="Enter your email"
                       required
                     />
@@ -118,9 +132,8 @@ export default function AuthModal() {
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className={`pl-10 w-full px-4 py-3 rounded-lg border ${
-                        passwordError ? "border-red-500" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-[#FFB20E] focus:border-transparent`}
+                      className={`pl-10 w-full px-4 py-3 rounded-lg border ${passwordError ? "border-red-500" : "border-gray-300"
+                        } focus:outline-none focus:ring-2 focus:ring-[#FFB20E] focus:border-transparent`}
                       placeholder="Enter your password"
                       required
                     />
@@ -149,6 +162,17 @@ export default function AuthModal() {
                   {signup ? "Log In" : "Sign Up"}
                 </button>
               </p>
+              <hr className="border-t border-gray-300 my-4" />
+
+              <button
+                type="button"
+                disabled={loading}
+                 onClick={handleGoogle}
+                className="w-full mt-5 bg-[#FFB20E] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#e6a00d] transition-colors duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FcGoogle size={24} /> {Gloading ? "Logging" : "Google"}
+                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" />
+              </button>
             </div>
           </div>
         </div>
