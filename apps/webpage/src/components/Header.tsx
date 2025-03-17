@@ -29,7 +29,7 @@ function Header() {
     }
     return (
         <div className="flex flex-col">
-            <div className="topHeader w-[100%] h-[40px] bg-white flex flex-row justify-around">
+            <div className="topHeader w-full h-[40px] bg-white flex flex-row justify-around fixed top-0 left-0 z-50 shadow-lg">
                 <div className="logo">
                     <img src={Logo} alt="Logo" />
                 </div>

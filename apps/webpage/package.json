@@ -10,6 +10,7 @@
     "lint": "eslint src/ --max-warnings 0"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.6.1",
     "@repo/ui": "workspace:*",
     "@tailwindcss/vite": "^4.0.14",
     "axios": "^1.8.3",
@@ -18,6 +19,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.3.0",
     "sonner": "^2.0.1",
     "tailwindcss": "^4.0.14"
