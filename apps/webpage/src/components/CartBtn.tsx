@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { Button } from "@repo/ui/button";
 import { addToCart, CartItem, removeItem } from "../store/slices/cartSlice";
-import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 export default function CartBtn() {
     const dispatch = useDispatch()
@@ -30,6 +30,10 @@ export default function CartBtn() {
             price: item.price,
             quantity: 1
         }))
+    }
+    const navigate = useNavigate()
+    const OrderBtn = () => {
+        cartItemsLength > 1 ? navigate("/orderpage") : " "
     }
 
 
@@ -81,12 +85,8 @@ export default function CartBtn() {
 
 
                 <div className="mt-auto">
-                    <Button className="w-full h-[40px] bg-amber-500 cursor-pointer">
-                        {cartItemsLength > 1 ? (
-                            <Link to="/orderpage" className="w-full h-full flex items-center justify-center">ORDER NOW</Link>
-                        ) : (
-                            "ORDER NOW"
-                        )}
+                    <Button onClick={OrderBtn} className="w-full h-[40px] bg-amber-500 cursor-pointer">
+                        Order Now
                     </Button>
                 </div>
             </DropdownMenuContent>

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import Cookies from 'js-cookie';
 
 
 export interface CartItem {
@@ -13,7 +14,7 @@ interface cartState {
     Cart : CartItem[]
 }
 
-const initialState : cartState = {Cart : []}
+const initialState : cartState = {Cart : JSON.parse(Cookies.get("cartItems") || '[]')}
 
 const cartSlice  = createSlice({
     name: 'cart',
@@ -26,6 +27,7 @@ const cartSlice  = createSlice({
             }else{
                 state.Cart.push(action.payload)
             }
+            Cookies.set("cartItems", JSON.stringify(state.Cart), {expires : 1})
         },
 
         removeItem: (state, action) => {
