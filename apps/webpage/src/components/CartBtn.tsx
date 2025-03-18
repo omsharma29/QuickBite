@@ -33,7 +33,7 @@ export default function CartBtn() {
     }
     const navigate = useNavigate()
     const OrderBtn = () => {
-        cartItemsLength > 1 ? navigate("/orderpage") : " "
+        cartItemsLength > 0 ? navigate("/orderpage") : " "
     }
 
 

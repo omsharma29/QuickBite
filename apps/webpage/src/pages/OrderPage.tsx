@@ -8,7 +8,7 @@ export default function OrderPage() {
   return (
     <div className="flex justify-between p-5 m-5 h-[80vh] gap-2">
       {/* Left Section - Personal Details & Address */}
-      <div className="w-3/4 bg-[#f17228bd] p-8 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+      <div className="w-3/4 bg-[#FFB20E] p-8 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
         {/* Personal Details Section */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-black mb-3">Personal Details</h2>
