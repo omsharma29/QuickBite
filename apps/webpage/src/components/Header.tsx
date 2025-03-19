@@ -9,6 +9,10 @@ import { useEffect, useState } from "react"
 import CartBtn from "./CartBtn"
 import { fetchAddress } from "../lib/AddressFetch"
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { useDispatch } from "react-redux"
+import { clearCart } from "../store/slices/cartSlice"
+import Cookies from 'js-cookie';
+
 
 interface Address {
     City: string;
@@ -21,6 +25,7 @@ function Header() {
     const [user, setUser] = useState<any | null>(null);
     const [pincode, setPincode] = useState("");
     const [address, setAddress] = useState<Address | null>(null);
+    const dispatch = useDispatch()
 
     // Checking session
     useEffect(() => {
@@ -62,6 +67,8 @@ function Header() {
     // Handle logout
     const handleLogout = async () => {
         try {
+            dispatch(clearCart())
+            Cookies.remove("cartItems");
             await auth.signOut();
             setAddress(null)
         } catch (error: any) {

@@ -43,6 +43,7 @@ const cartSlice  = createSlice({
 
         clearCart : (state) => {
             state.Cart = []
+            Cookies.remove("cartItems")
         }
     }
 })
