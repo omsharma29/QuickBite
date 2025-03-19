@@ -1,6 +1,6 @@
 import axios from "axios";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "./firebase-auth";
+import { collection, addDoc, query, getDocs, where, doc, setDoc } from "firebase/firestore";
+import { auth, db } from "./firebase-auth";
 
 interface Address {
   postalLocation: string;
@@ -11,12 +11,11 @@ interface Address {
 
 async function Address(pincode: number): Promise<Address | undefined> {
   try {
-    // Ensure proper URL concatenation with the correct base URL
-    const fetch = await axios.get(`${import.meta.env.VITE_API_URL}/pincode?postalcode=${pincode}`);
-    const address = fetch.data?.response?.result?.item0;
+    const fetch = await axios.get(`${import.meta.env.VITE_ADDRESS_URL}/pincode?postalcode=${pincode}`);
+    const address = fetch.data?.result?.[0]
     
     // Log response for debugging
-    console.log(fetch.data);
+    // console.log(fetch.data);
 
     if (address) {
       return {
@@ -50,14 +49,38 @@ export async function fetchAddress(pincode: number) {
 
 async function AddToFireStore(addressData: Address) {
   try {
-    await addDoc(collection(db, "cities"), {
-      City: addressData.postalLocation,
-      District: addressData.district,
-      State: addressData.state,
-      Pin: addressData.postalCode
-    });
-    console.log("Address added to Firestore successfully.");
+    const userId = auth.currentUser?.uid;
+    if (!userId) {
+      console.error("No user is logged in.");
+      return;
+    }
+
+    // Query Firestore to check if the user already has an address
+    const q = query(collection(db, "cities"), where("User", "==", userId));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      // If the user does not have an address, add a new one
+      await addDoc(collection(db, "cities"), {
+        User: userId,
+        City: addressData.postalLocation,
+        District: addressData.district,
+        State: addressData.state,
+        Pin: addressData.postalCode
+      });
+      console.log("Address added to Firestore successfully.");
+    } else {
+      // If the user already has an address, update the existing one
+      const docRef = doc(db, "cities", querySnapshot.docs[0].id);
+      await setDoc(docRef, {
+        User: userId,
+        City: addressData.postalLocation,
+        District: addressData.district,
+        State: addressData.state,
+        Pin: addressData.postalCode
+      });
+      console.log("Address updated in Firestore successfully.");
+    }
   } catch (error) {
-    console.error("Error adding address to Firestore:", error);
-  }
-}
+    console.error("Error adding/updating address to Firestore:", error);
+  }}

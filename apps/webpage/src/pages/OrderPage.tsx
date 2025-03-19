@@ -1,10 +1,46 @@
 import { Button } from "@repo/ui/button";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import { auth, db } from "../lib/firebase-auth";
+import { useEffect, useState } from "react";
+import { collection,  getDocs, query, where } from "firebase/firestore";
 
+interface Address {
+  City: string;
+  District: string;
+  State: string;
+  Pin: number;
+}
 export default function OrderPage() {
   const cartItems = useSelector((state: RootState) => state.cart.Cart ?? [])
   const totalAmount = cartItems.reduce((total, item)=> total + item.price * item.quantity, 0)
+  const [address, setAddress] = useState<Address | null>(null);
+  const user = auth.currentUser
+  useEffect(() => {
+    const fetchAddressData = async () => {
+        const user = auth.currentUser; // Get current user
+        if (!user) {
+            console.error("No user is logged in.");
+            return;
+        }
+
+        try {
+            const addressQuery = query(collection(db, "cities"), where("User", "==", user.uid));
+            const querySnapshot = await getDocs(addressQuery);
+
+            if (!querySnapshot.empty) {
+                const userAddress = querySnapshot.docs[0].data() as Address;
+                setAddress(userAddress); // Set address state
+            } 
+        } catch (error) {
+            console.error("Error fetching address:", error);
+        }
+    };
+
+    fetchAddressData(); // Call the async function inside useEffect
+
+}, []);
+
   return (
     <div className="flex justify-between p-5 m-5 h-[80vh] gap-2">
       {/* Left Section - Personal Details & Address */}
@@ -14,7 +50,8 @@ export default function OrderPage() {
           <h2 className="text-xl font-semibold text-black mb-3">Personal Details</h2>
           <div className="flex  gap-3">
             <input
-              type="text"
+              type="email"
+              value={user?.email ?? ""}
               placeholder="Email"
               className="w-1/2 bg-white border-2 border-gray-300 rounded-md p-1.5 shadow-md text-sm focus:outline-none focus:border-amber-500 transition duration-300"
             />
@@ -37,21 +74,25 @@ export default function OrderPage() {
           <div className="grid grid-cols-2 gap-4">
             <input
               type="text"
+              value={address?.City}
               placeholder="City"
               className="bg-white border-2 border-gray-300 rounded-md p-2 shadow-md focus:outline-none focus:border-amber-500 transition duration-300"
             />
             <input
               type="text"
+              value={address?.State}
               placeholder="State"
               className="bg-white border-2 border-gray-300 rounded-md p-2 shadow-md focus:outline-none focus:border-amber-500 transition duration-300"
             />
             <input
               type="text"
+              value={address?.District}
               placeholder="District"
               className="bg-white border-2 border-gray-300 rounded-md p-2 shadow-md focus:outline-none focus:border-amber-500 transition duration-300"
             />
             <input
               type="text"
+              value={address?.Pin}
               placeholder="Pincode"
               className="bg-white border-2 border-gray-300 rounded-md p-2 shadow-md focus:outline-none focus:border-amber-500 transition duration-300"
             />

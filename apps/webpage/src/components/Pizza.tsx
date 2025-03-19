@@ -38,7 +38,7 @@ export default function Pizza() {
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((currentUser: any) => {
-            console.log("Auth State Changed:", currentUser);
+            // console.log("Auth State Changed:", currentUser);
             setUser(currentUser);
         });
 
