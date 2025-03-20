@@ -9,9 +9,9 @@ interface Address {
   postalCode: number;
 }
 
-async function Address(pincode: number): Promise<Address | undefined> {
+async function Address(zip_code: number): Promise<Address | undefined> {
   try {
-    const fetch = await axios.get(`${import.meta.env.VITE_ADDRESS_URL}/pincode?postalcode=${pincode}`);
+    const fetch = await axios.get(`${import.meta.env.VITE_ADDRESS_URL}&zip_code=${zip_code}&country_code=IN`);
     const address = fetch.data?.result?.[0]
     
     // Log response for debugging
@@ -34,9 +34,9 @@ async function Address(pincode: number): Promise<Address | undefined> {
   }
 }
 
-export async function fetchAddress(pincode: number) {
+export async function fetchAddress(zip_code: number) {
   try {
-    const address = await Address(pincode);
+    const address = await Address(zip_code);
     if (address) {
       await AddToFireStore(address);
     } else {

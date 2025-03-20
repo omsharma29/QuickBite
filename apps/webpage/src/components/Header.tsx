@@ -24,7 +24,7 @@ interface Address {
 
 function Header() {
     const [user, setUser] = useState<any | null>(null);
-    const [pincode, setPincode] = useState("");
+    const [zip_code, setzip_code] = useState("");
     const [address, setAddress] = useState<Address | null>(null);
     const dispatch = useDispatch()
     const [sidebar, setSidebar] = useState(false)
@@ -84,12 +84,13 @@ function Header() {
         }
     };
 
-    // Handle pincode submission
+    // Handle zip_code submission
     const handlePin = async () => {
-        if (pincode) {
-            await fetchAddress(Number(pincode)); // Assuming fetchAddress stores the pincode in Firestore
-            setPincode("");
-            window.location.reload()// Clear input after successful address set
+        if (zip_code) {
+            await fetchAddress(Number(zip_code)); // Assuming fetchAddress stores the zip_code in Firestore
+            setzip_code("");
+            window.location.reload()
+            
         }
     };
 
@@ -156,8 +157,8 @@ function Header() {
             {/* Input & Button Section */}
             <span className="textarea flex items-center gap-2 sm:gap-4">
                 <Input
-                    value={pincode}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPincode(e.target.value)}
+                    value={zip_code}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setzip_code(e.target.value)}
                     placeholder="Enter Your Pin Code"
                     className="w-[60%] sm:w-[70%] h-[30px] sm:h-[40px] text-xs sm:text-sm px-2 sm:px-3 border rounded-md"
                 />
