@@ -5,7 +5,6 @@ import { auth, provider } from "../lib/firebase-auth";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { FcGoogle } from "react-icons/fc";
 
-
 export default function AuthModal() {
   const [modal, setModal] = useState(false);
   const [email, setEmail] = useState('');
@@ -68,16 +67,14 @@ export default function AuthModal() {
     }
   };
 
-  const handleGoogle = async()=>{
+  const handleGoogle = async() => {
     setGLoading(true);
     try {
-      await signInWithPopup(auth, provider )
-      setGLoading(false)
+      await signInWithPopup(auth, provider);
+      setGLoading(false);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-    
-
   }
 
   return (
@@ -91,8 +88,8 @@ export default function AuthModal() {
 
       {modal && (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black/50 z-[1000]">
-          <div className="bg-white w-[30%] h-[500px] flex items-center justify-center text-black border border-gray-300 shadow-lg rounded-md">
-            <div>
+          <div className="bg-white w-[80%] sm:w-[30%] h-[500px] flex items-center justify-center text-black border border-gray-300 shadow-lg rounded-md">
+            <div className="w-full px-4 sm:px-8">
               <div className="flex justify-between mb-4 pb-2">
                 <div className="font-bold text-3xl text-[#FFB20E]">
                   {signup ? "Sign Up" : "Log In"}
@@ -167,7 +164,7 @@ export default function AuthModal() {
               <button
                 type="button"
                 disabled={loading}
-                 onClick={handleGoogle}
+                onClick={handleGoogle}
                 className="w-full mt-5 bg-[#FFB20E] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#e6a00d] transition-colors duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <FcGoogle size={24} /> {Gloading ? "Logging" : "Google"}

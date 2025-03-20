@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { auth } from "../lib/firebase-auth";
 import { useDispatch } from "react-redux";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css"; // Import the Swiper styles
+import "swiper/css/pagination";
 import { addToCart } from "../store/slices/cartSlice";
 
 interface Pizzas {
@@ -67,26 +70,60 @@ export default function Pizza() {
 
     return (
         <div>
-            <div className="font-bold text-center text-4xl mb-8">All Pizzas</div>
-            <div>
-                <div className="pizzas flex flex-wrap justify-center gap-5 mb-5">
-                    {pizzas?.map((pizz) => (
-                        <div key={pizz.id} className="flex flex-col w-1/6">
-                            <div className="image">
-                                <img src={pizz.pizza_img} className="rounded-4xl" alt={pizz.pizza_name} />
-                            </div>
-                            <div className="pizzaName font-semibold">{pizz.pizza_name}</div>
-                            <div className="price font-bold">Price: {pizz.pizza_price}</div>
-                            <Button
-                                onClick={() => handleToast(pizz)}
-                                className="text-white mt-2 w-[150px] cursor-pointer bg-[#F17228] border border-transparent hover:border-[#FF5900] hover:drop-shadow-[0px_4px_10px_#FFB20E] rounded-2xl"
-                            >
-                                Add To Cart
-                            </Button>
-                        </div>
-                    ))}
+      <div className="font-bold text-center text-4xl mb-8">All Pizzas</div>
+      
+      {/* Swiper Carousel for Small Screens */}
+      <div className="md:hidden"> 
+        <Swiper
+          spaceBetween={10} // Space between each slide
+          slidesPerView={1} // Show 1 item at a time
+          loop={true} // Enable looping
+          autoplay={{ delay: 3000 }} // Auto-play with delay of 3 seconds
+          pagination={{ clickable: true }} // Pagination control
+        >
+          {pizzas?.map((pizz) => (
+            <SwiperSlide key={pizz.id}>
+              <div className="flex flex-col items-center">
+                <div className="image">
+                  <img
+                    src={pizz.pizza_img}
+                    className="rounded-4xl"
+                    alt={pizz.pizza_name}
+                  />
                 </div>
+                <div className="pizzaName font-semibold">{pizz.pizza_name}</div>
+                <div className="price font-bold">Price: {pizz.pizza_price}</div>
+                <Button
+                  onClick={() => handleToast(pizz)}
+                  className="text-white mt-2 w-[150px] cursor-pointer bg-[#F17228] border border-transparent hover:border-[#FF5900] hover:drop-shadow-[0px_4px_10px_#FFB20E] rounded-2xl"
+                >
+                  Add To Cart
+                </Button>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+
+      {/* Grid Layout for Larger Screens */}
+      <div className="pizzas hidden sm:flex flex-wrap justify-center gap-5 mb-5">
+        {pizzas?.map((pizz) => (
+          <div key={pizz.id} className="flex flex-col w-1/6">
+            <div className="image">
+              <img src={pizz.pizza_img} className="rounded-4xl" alt={pizz.pizza_name} />
             </div>
-        </div>
-    );
-}
+            <div className="pizzaName font-semibold">{pizz.pizza_name}</div>
+            <div className="price font-bold">Price: {pizz.pizza_price}</div>
+            <Button
+              onClick={() => handleToast(pizz)}
+              className="text-white mt-2 w-[150px] cursor-pointer bg-[#F17228] border border-transparent hover:border-[#FF5900] hover:drop-shadow-[0px_4px_10px_#FFB20E] rounded-2xl"
+            >
+              Add To Cart
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+   

@@ -46,7 +46,9 @@ export default function CartBtn() {
                         {cartItemsLength}
                     </span>
                 </div>
-                Add to Cart
+                <span className="hidden lg:inline sm:hidden">
+  Add to Cart
+</span>
             </DropdownMenuTrigger>
 
             {/* Main Dropdown Container */}

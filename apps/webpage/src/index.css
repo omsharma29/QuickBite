@@ -1,1 +1,22 @@
 @import "tailwindcss";
+
+/* Add this in your global styles or Tailwind config file */
+/* Add this in your global styles or Tailwind config file */
+@keyframes slide {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.flashbox-container {
+    width: 100%;
+    overflow: hidden;
+} 
+
+.animate-slide {
+    display: flex;
+    animation: slide 30s linear infinite;
+}

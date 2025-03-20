@@ -29,7 +29,7 @@ const info = [
 
 export default function HowItWorks() {
     return (
-        <div className='flex flex-col items-center w-[100%] h-[518px] mt-5 mb-1 bg-gradient-to-b from-[#ffcf6733] from-opacity-10 to-white'>
+        <div className='hidden sm:flex flex-col items-center w-[100%] h-[518px] mt-5 mb-1 bg-gradient-to-b from-[#ffcf6733] from-opacity-10 to-white'>
             <div className="title font-extrabold text-6xl mt-10 text-[#F17228]  ">How does it Work</div>
             <div className="items flex justify-center ">
                 {info.map((infos) => (

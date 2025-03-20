@@ -1,5 +1,5 @@
 import Logo from "../assets/Logo.svg"
-import { MapPin, Truck } from "lucide-react"
+import { MapPin, Truck, AlignJustify } from "lucide-react"
 import HeaderImg from "../assets/HeaderImg.svg"
 import { Input } from "@repo/ui/input"
 import { Button, Button as FindAddress } from "@repo/ui/button"
@@ -12,6 +12,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { useDispatch } from "react-redux"
 import { clearCart } from "../store/slices/cartSlice"
 import Cookies from 'js-cookie';
+import SideBar from "./SideBar"
 
 
 interface Address {
@@ -26,6 +27,13 @@ function Header() {
     const [pincode, setPincode] = useState("");
     const [address, setAddress] = useState<Address | null>(null);
     const dispatch = useDispatch()
+    const [sidebar, setSidebar] = useState(false)
+
+    //side bar 
+
+    const handleClick = ()=>{
+        setSidebar((prevState) => !prevState)
+    }
 
     // Checking session
     useEffect(() => {
@@ -85,58 +93,92 @@ function Header() {
         }
     };
 
-    return (
-        <div className="flex flex-col">
-            <div className="topHeader w-full h-[40px] bg-white flex flex-row justify-around fixed top-0 left-0 z-50 shadow-lg">
-                <div className="logo">
-                    <img src={Logo} alt="Logo" />
-                </div>
-                <div className="address flex gap-1.5 m-2">
-                    <span>Deliver To:</span>
-                    <MapPin className="text-[#FFB20E]" />
-                    <span>{address ? `${address.City}, ${address.District}, ${address.State}` : "Location Not Found"}</span>
-                </div>
-                {user ? (
-                    <div className="cart flex gap-1.5">
-                        <CartBtn />
-                    </div>
-                ) : null}
-                <div className="signupButton flex gap-1.5">
-                    <span className="pl-2 my-0.5">
-                        {user ? (
-                            <Button onClick={handleLogout} className="px-4 py-2 bg-[#FFB20E] text-white rounded-lg hover:bg-[#e6a00d] transition-colors duration-200">Log Out</Button>
-                        ) : (
-                            <AuthModal />
-                        )}
-                    </span>
-                </div>
-            </div>
 
-            <div className="Header flex flex-row justify-around bg-[#FFB20E] w-[100%] h-[400px]">
-                <div className="text flex flex-col my-10">
-                    <h1 className="text-white text-7xl font-extrabold drop-shadow-sm pb-1.5">Are You Starving?</h1>
-                    <p className="text-white">Within a few clicks, find meals that are accessible near you</p>
-                    <div className="addressBox h-[124.4px] w-[500px] justify-around rounded-2xl bg-white mt-8 flex flex-col">
-                        <span className="delivery flex flex-row gap-1.5 p-5 text-red-600 pb-2">
-                            <Truck />
-                            <span>Delivery</span>
-                        </span>
-                        <span className="textarea flex flex-row gap-1.5 px-5 pb-5">
-                            <Input
-                                value={pincode}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPincode(e.target.value)} // Correct event handling
-                                placeholder="Enter Your Pin Code"
-                                className="w-[70%]"
-                            />
-                            <FindAddress onClick={handlePin} className="text-red-600 hover:text-white border-2 border-red-200 hover:bg-red-500 cursor-pointer">Find Address</FindAddress>
-                        </span>
-                    </div>
-                </div>
-                <div className="img">
-                    <img src={HeaderImg} alt="Header Image" />
-                </div>
-            </div>
+
+
+
+
+
+    return (
+        <div className="sm:flex sm:flex-col w-full overflow-hidden">
+    <div className="topHeader w-full h-[40px] bg-white flex flex-row justify-around fixed top-0 left-0 z-50 shadow-lg">
+        <div className="logo hidden lg:inline">
+            <img src={Logo} alt="Logo" />
         </div>
+        <div className="address flex gap-1.5 sm:m-2">
+            <span className="hidden lg:inline">Deliver To:</span>
+            <MapPin className="text-[#FFB20E]" />
+            <span>{address ? `${address.City}, ${address.District}, ${address.State}` : "Location Not Found"}</span>
+        </div>
+        {user ? (
+            <div className="cart flex gap-1.5">
+                <CartBtn />
+            </div>
+        ) : (
+            <div className="sm:hidden"><AuthModal /></div>
+        )}
+        <div className="signupButton sm:flex gap-1.5 hidden lg:inline ">
+            <span className="pl-2 my-0.5">
+                {user ? (
+                    <Button onClick={handleLogout} className="px-4 py-2 bg-[#FFB20E] text-white rounded-lg hover:bg-[#e6a00d] transition-colors duration-200">Log Out</Button>
+                ) : (
+                    <AuthModal />
+                )}
+            </span>
+        </div>
+    </div>
+
+    <div className="Header relative flex flex-col sm:flex-row items-center justify-between bg-[#FFB20E] w-full h-auto sm:h-[400px] p-5 sm:p-10">
+    {/* Left Section - Text & Input */}
+    <div className="text flex flex-col items-center sm:items-start text-center sm:text-left sm:max-w-full">
+        <h1 className="text-white text-2xl sm:text-7xl font-extrabold drop-shadow-sm sm:py-2 pt-5">
+            Are You Starving?
+        </h1>
+        
+        {/* AlignJustify icon in top-left corner */}
+        {sidebar && <SideBar sidebar={sidebar} setSidebar={setSidebar} />}
+        <div className="sm:hidden absolute left-4 top-4 flex justify-start items-start px-4 pt-7">
+            <AlignJustify onClick={handleClick} className="text-white cursor-pointer" />
+        </div>
+
+        <p className="text-white text-sm sm:text-lg">
+            Within a few clicks, find meals that are accessible near you.
+        </p>
+
+        {/* Address Box */}
+        <div className="addressBox w-full max-w-full sm:max-w-[500px] h-auto sm:h-[124.4px] rounded-2xl bg-white mt-4 sm:mt-8 flex flex-col justify-around p-3 sm:p-5">
+            {/* Delivery Section */}
+            <span className="delivery flex items-center gap-2 sm:gap-3 text-red-600 pb-2">
+                <Truck className="w-4 h-4 sm:w-6 sm:h-6" />
+                <span className="text-xs sm:text-base">Delivery</span>
+            </span>
+
+            {/* Input & Button Section */}
+            <span className="textarea flex items-center gap-2 sm:gap-4">
+                <Input
+                    value={pincode}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPincode(e.target.value)}
+                    placeholder="Enter Your Pin Code"
+                    className="w-[60%] sm:w-[70%] h-[30px] sm:h-[40px] text-xs sm:text-sm px-2 sm:px-3 border rounded-md"
+                />
+                <FindAddress
+                    onClick={handlePin}
+                    className="w-[40%] sm:w-[30%] h-[30px] sm:h-[40px] text-xs sm:text-sm text-red-600 hover:text-white border-2 border-red-200 hover:bg-red-500 cursor-pointer rounded-md flex items-center justify-center"
+                >
+                    Find Address
+                </FindAddress>
+            </span>
+        </div>
+    </div>
+
+    {/* Right Section - Image */}
+    <div className="img w-full sm:w-[50%] flex justify-center mt-5 sm:mt-0">
+        <img src={HeaderImg} alt="Header Image" className="max-w-full h-auto object-contain" />
+    </div>
+</div>
+
+</div>
+
     );
 }
 

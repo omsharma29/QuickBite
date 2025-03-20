@@ -42,9 +42,9 @@ export default function OrderPage() {
 }, []);
 
   return (
-    <div className="flex justify-between p-5 m-5 h-[80vh] gap-2">
+    <div className="flex sm:flex-row flex-col sm:justify-between p-5 m-5 h-[80vh] gap-3">
       {/* Left Section - Personal Details & Address */}
-      <div className="w-3/4 bg-[#FFB20E] p-8 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+      <div className=" sm:w-3/4 bg-[#FFB20E] p-8 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
         {/* Personal Details Section */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-black mb-3">Personal Details</h2>
@@ -111,7 +111,7 @@ export default function OrderPage() {
       </div>
 
       {/* Right Section - Order Summary */}
-      <div className="w-1/4 text-black p-6 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col items-center">
+      <div className="sm:w-1/4 text-black px-6 mb:3 py-4 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col items-center">
         <p className="font-semibold text-2xl">&#8377; {totalAmount} /-</p>
         <hr className="w-full border-t-2 border-gray-400 mt-2 pt-4" />
         <div className="w-full h-[60%]  ">
