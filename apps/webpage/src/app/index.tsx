@@ -4,6 +4,7 @@ import NotFound from "../pages/NotFound";
 import OrderPage from "../pages/OrderPage";
 import { auth } from "../lib/firebase-auth";
 import { useState, useEffect } from "react";
+import OrderSuccess from "../pages/Order-Sucessful";
 
 export default function App() {
   const [user, setUser] = useState<any | null>(null);
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         {user && <Route path="/orderpage" element={<OrderPage />} />}
+        {user && <Route path="/ordersucessful" element={<OrderSuccess/>} />}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
