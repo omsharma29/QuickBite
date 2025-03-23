@@ -26,7 +26,7 @@ export default function OrderPage() {
   const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [orderId, setOrderId] = useState(" ")
+  const [orderid, setOrderId] = useState(" ")
   const [cashfreeInstance, setCashfreeInstance] = useState<any>(null);
   const navigate = useNavigate()
 
@@ -119,6 +119,8 @@ export default function OrderPage() {
       }
 
       setOrderId(orderId);
+
+      console.log(orderid)
 
       const checkoutOptions = {
         paymentSessionId: paymentSessionId,
