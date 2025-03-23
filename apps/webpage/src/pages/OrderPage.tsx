@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import axios from "axios";
 import * as Cashfree from "@cashfreepayments/cashfree-js";
+import { useNavigate } from 'react-router-dom';
+
 
 interface Address {
   City: string;
@@ -24,8 +26,9 @@ export default function OrderPage() {
   const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [orderId, setOrderId]= useState(" ")
+  const [orderId, setOrderId] = useState(" ")
   const [cashfreeInstance, setCashfreeInstance] = useState<any>(null);
+  const navigate = useNavigate()
 
   const user = auth.currentUser;
 
@@ -74,7 +77,7 @@ export default function OrderPage() {
       setError("Payment system not initialized");
       return;
     }
-    
+
     // Ensure all fields are filled
     if (
       !user?.email ||
@@ -89,7 +92,7 @@ export default function OrderPage() {
       return;
     }
     setError(null);
-    
+
     try {
       const orderData = {
         amount: totalAmount,
@@ -100,7 +103,7 @@ export default function OrderPage() {
         customerId: user.uid,
       };
 
-      const response = await axios.post('http://localhost:5001/api/cashfree-payment', orderData, {
+      const response = await axios.post(`${import.meta.env.VITE_URL}/api/cashfree-payment`, orderData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -109,22 +112,31 @@ export default function OrderPage() {
 
       // Extract payment session ID from the correct path in response
       const paymentSessionId = response.data.orderData.payment_session_id;
-      
+      const orderId = response.data.orderData.order_id;
+
       if (!paymentSessionId) {
         throw new Error('Payment session ID not received');
       }
 
-      // Store order ID
-      setOrderId(response.data.orderData.order_id);
+      setOrderId(orderId);
 
-      // Configure checkout options
       const checkoutOptions = {
         paymentSessionId: paymentSessionId,
         paymentComponents: ["card", "upi", "netbanking"],
-        redirectTarget: "_modal",
+        redirectTarget: "_self",
+        onPaymentSuccess: (data: any) => {
+          console.log("Payment Success", data);
+          navigate(`/ordersuccessful?orderId=${orderId}`);
+        },
+        onPaymentFailure: (data: any) => {
+          console.log("Payment Failed", data);
+          setError("Payment failed. Please try again.");
+        },
+        onClose: () => {
+          console.log("Payment Modal Closed");
+        }
       };
 
-      // Remove console.log and directly call checkout
       await cashfreeInstance.checkout(checkoutOptions);
 
     } catch (error: any) {
@@ -132,7 +144,7 @@ export default function OrderPage() {
       setError(error.message || 'Payment initialization failed');
     }
   }
-    
+
   return (
     <div className="flex sm:flex-row flex-col sm:justify-between p-5 m-5 h-[80vh] gap-3">
       <div className="sm:w-3/4 bg-[#FFB20E] p-8 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
