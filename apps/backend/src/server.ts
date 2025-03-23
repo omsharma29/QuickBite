@@ -6,7 +6,7 @@ export const createServer = (): express.Application => {
   const app = express();
   
   app.use(cors({
-    origin: "http://localhost:3001",
+    origin: "https://quick-bite-webpage.vercel.app",
     credentials: true
   }));
 
