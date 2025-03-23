@@ -1,8 +1,8 @@
 import { Cashfree } from "cashfree-pg"; 
 
 
-Cashfree.XClientId = process.env.CASHFREE_APP_ID; // Replace with your Test App ID from Cashfree
-Cashfree.XClientSecret= process.env.CASHFREE_APP_SECRET_KEY; // Replace with your Test Secret Key
+Cashfree.XClientId = import.meta.env.VITE_CASHFREE_APP_ID; // Replace with your Test App ID from Cashfree
+Cashfree.XClientSecret= import.meta.env.VITE_CASHFREE_APP_SECRET_KEY; // Replace with your Test Secret Key
 Cashfree.XEnvironment = Cashfree.Environment.SANDBOX; // Use sandbox URL for testing
 
 interface CreateOrderParams {
@@ -19,26 +19,23 @@ export const createCashfreeOrder = async ({ amount, customerName, customerEmail,
     const orderData = {
       order_amount: amount,
       order_currency: "INR",
-      order_id: orderId.toString(), // Convert orderId to string
       customer_details: {
-        customer_id: customerId,
+        customer_id: customerId, // Added customer_id as required
         customer_name: customerName,
         customer_email: customerEmail,
         customer_phone: customerPhone,
       },
       order_meta: {
-        return_url: "http://localhost:3001/ordersuccessful?order_id={order_id}", // Update with your actual frontend URL
+        return_url: `https://test.cashfree.com/pgappsdemos/return.php?order_id=${orderId}`, // Replace with your success page URL
       },
     };
 
     const response = await Cashfree.PGCreateOrder("2023-08-01", orderData);
-    return {
-      sessionId: response.data.payment_session_id,
-      orderData: response.data
-    };
+    console.log(response.data)
+    return response.data;
     
   } catch (error: any) {
     console.error("Cashfree Order Error:", error?.response?.data || error);
-    throw new Error(error?.response?.data?.message || "Failed to create order");
+    throw new Error("Failed to create order");
   }
 };

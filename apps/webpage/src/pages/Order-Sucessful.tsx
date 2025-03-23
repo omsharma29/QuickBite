@@ -1,6 +1,3 @@
-import { useEffect } from "react";
-import { db, auth } from "../lib/firebase-auth";
-import { collection, addDoc } from "firebase/firestore";
 
 
 export default function OrderSuccess() {

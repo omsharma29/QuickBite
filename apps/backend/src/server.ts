@@ -1,26 +1,30 @@
-import bodyParser from "body-parser";
-import express, { type Express } from "express";
+import express from "express";
 import cors from "cors";
-import cookieParser from "cookie-parser";
-import router from "./routes/allroutes";
+import routes from "./routes/allroutes";
 
-const { json, urlencoded } = bodyParser;
-
-export const createServer = (): Express => {
+export const createServer = (): express.Application => {
   const app = express();
-  app
-    .disable("x-powered-by")
-    .use(urlencoded({ extended: true }))
-    .use(json())
-    .use(cors())
-    .use(cookieParser())
-    .get("/message/:name", (req, res) => {
-      return res.json({ message: `hello ${req.params.name}` });
-    })
-    .get("/", (_, res) => {
-      return res.json({ ok: true });
-    })
-    .use("/api", router); // add a router which will handle pizza list
+  
+  app.use(cors({
+    origin: "http://localhost:3001",
+    credentials: true
+  }));
+
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+
+  // Add health check route
+  app.get('/api/health', (_req, res) => {
+    res.json({ status: 'ok' });
+  });
+
+  app.use('/api', routes);
+
+  // Error handling
+  app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    console.error('Error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  });
 
   return app;
 };

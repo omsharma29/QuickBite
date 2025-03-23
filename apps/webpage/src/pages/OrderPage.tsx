@@ -4,7 +4,8 @@ import { RootState } from "../store/store";
 import { auth, db } from "../lib/firebase-auth";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { createCashfreeOrder } from "../lib/Payment";
+import axios from "axios";
+import * as Cashfree from "@cashfreepayments/cashfree-js";
 
 interface Address {
   City: string;
@@ -23,10 +24,10 @@ export default function OrderPage() {
   const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [orderId, setOrderId]= useState(" ")
+  const [cashfreeInstance, setCashfreeInstance] = useState<any>(null);
 
   const user = auth.currentUser;
-
-  
 
   useEffect(() => {
     const fetchAddressData = async () => {
@@ -52,7 +53,28 @@ export default function OrderPage() {
     fetchAddressData(); // Call the async function inside useEffect
   }, []);
 
-  const handlePayment = () => {
+  useEffect(() => {
+    const initializeCashfree = async () => {
+      try {
+        const instance = await Cashfree.load({
+          mode: "sandbox",
+        });
+        setCashfreeInstance(instance);
+      } catch (error) {
+        console.error("Failed to initialize Cashfree:", error);
+        setError("Payment system initialization failed");
+      }
+    };
+
+    initializeCashfree();
+  }, []);
+
+  const handlePayment = async () => {
+    if (!cashfreeInstance) {
+      setError("Payment system not initialized");
+      return;
+    }
+    
     // Ensure all fields are filled
     if (
       !user?.email ||
@@ -66,19 +88,51 @@ export default function OrderPage() {
       setError("All fields are mandatory. Please fill in all details.");
       return;
     }
+    setError(null);
+    
+    try {
+      const orderData = {
+        amount: totalAmount,
+        customerName: name,
+        customerEmail: user.email,
+        customerPhone: phone,
+        orderId: Date.now().toString(),
+        customerId: user.uid,
+      };
 
-    setError(null); // Clear error if everything is filled
+      const response = await axios.post('http://localhost:5001/api/cashfree-payment', orderData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: false
+      });
 
-    // Proceed with the payment
-    console.log("Payment processing...");
-    // Add your payment logic here
-    const order_ID = Date.now()
-    createCashfreeOrder({ amount: totalAmount, customerName : name, customerEmail: user.email, customerPhone: phone, customerId: user.uid, orderId: order_ID })
+      // Extract payment session ID from the correct path in response
+      const paymentSessionId = response.data.orderData.payment_session_id;
+      
+      if (!paymentSessionId) {
+        throw new Error('Payment session ID not received');
+      }
 
+      // Store order ID
+      setOrderId(response.data.orderData.order_id);
 
+      // Configure checkout options
+      const checkoutOptions = {
+        paymentSessionId: paymentSessionId,
+        paymentComponents: ["card", "upi", "netbanking"],
+        redirectTarget: "_modal",
+      };
 
-  };
+      // Remove console.log and directly call checkout
+      await cashfreeInstance.checkout(checkoutOptions);
 
+    } catch (error: any) {
+      console.error('Full error details:', error);
+      setError(error.message || 'Payment initialization failed');
+    }
+  }
+    
   return (
     <div className="flex sm:flex-row flex-col sm:justify-between p-5 m-5 h-[80vh] gap-3">
       <div className="sm:w-3/4 bg-[#FFB20E] p-8 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
