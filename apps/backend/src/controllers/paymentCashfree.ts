@@ -27,7 +27,7 @@ export const createCashfreeOrder = async ({ amount, customerName, customerEmail,
         customer_phone: customerPhone,
       },
       order_meta: {
-        return_url: "http://localhost:3001/ordersuccessful?order_id={order_id}", // Update with your actual frontend URL
+        return_url: `${process.env.FRONT_URL || 'http://localhost:3001'}/ordersuccessful?order_id=${orderId}`,
       },
     };
 

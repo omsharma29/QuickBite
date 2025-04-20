@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { SkeletonCard } from "./SkeletonCard";
 
 interface Pizza {
     id: number;
@@ -35,13 +36,22 @@ function FlashBox() {
         fetchPizzas();
     }, []);
 
-    if (loading) return <p>Loading...</p>;
+    if (loading) return (
+        <div className="flex gap-4 sm:gap-6 md:gap-8 overflow-x-hidden px-4 py-4">
+            {[...Array(5)].map((_, index) => (
+                <div key={index} className="flex-shrink-0 w-[280px] sm:w-[320px] px-2">
+                    <SkeletonCard />
+                </div>
+            ))}
+        </div>
+    );
     if (error) return <p>Error: {error}</p>;
 
     return (
         <div className="flashbox-container overflow-hidden px-4 pb-4 sm:px-8">
             <div className="flex mt-16 overflow-x-hidden relative">
-                <div className="flex gap-4 sm:gap-6 md:gap-8 animate-slide">
+               
+                    <div className="flex gap-4 sm:gap-6 md:gap-8 animate-slide">
                     {/* First set of pizzas */}
                     {(pizzas ?? []).map((pizza, index) => (
                         <div key={`first-${pizza.id}`} className="flex-shrink-0 w-[280px] sm:w-[320px] px-2">
@@ -95,6 +105,7 @@ function FlashBox() {
                         </div>
                     ))}
                 </div>
+                
             </div>
         </div>
     );

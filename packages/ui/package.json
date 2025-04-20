@@ -11,7 +11,8 @@
     "./input": "./components/ui/input.tsx",
     "./dialog": "./components/ui/dialog.tsx",
     "./dropdown": "./components/ui/dropdown-menu.tsx",
-    "./sonner" : "./components/ui/sonner.tsx"
+    "./sonner" : "./components/ui/sonner.tsx",
+    "./skeleton" : "./components/ui/skeleton.tsx"
   },
   "keywords": [],
   "author": "",
