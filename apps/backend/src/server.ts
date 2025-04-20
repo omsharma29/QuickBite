@@ -8,8 +8,7 @@ export const createServer = (): express.Application => {
   app.use(cors({
     origin: [
       "https://quick-bite-webpage.vercel.app", 
-      "http://localhost:3001",
-      "https://quickbite-xyhf.onrender.com"
+      "http://localhost:3001"
     ],
     credentials: true
   }));
